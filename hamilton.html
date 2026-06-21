@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Visual Toán Rời Rạc 2A - Chu trình Hamilton</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004ac6",
+                        "background": "#f7f9fb",
+                        "surface": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434655"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        .math { font-family: "Cambria", "Times New Roman", serif; font-style: italic; }
+        .rule-card { border-left: 4px solid #004ac6; background-color: #f8fafc; padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 12px; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex flex-col min-h-screen">
+
+    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 max-w-[1200px] mx-auto py-4">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl">reped</span>
+                <span class="text-xl font-bold text-primary">Biện luận Logic Chu trình Hamilton</span>
+            </div>
+            <a class="text-sm font-semibold text-primary hover:underline flex items-center gap-1" href="index.html">
+                <span class="material-symbols-outlined text-sm">arrow_back</span> Quay lại trang chủ
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full px-6 max-w-[1200px] mx-auto py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary border-b pb-2">
+                    <span class="material-symbols-outlined">settings</span> Cấu hình dữ liệu đầu vào
+                </h2>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Chế độ hiển thị tên đỉnh:</label>
+                    <select id="display-mode" class="w-full rounded border-outline-variant p-2 text-sm font-semibold bg-gray-50 focus:ring-1 focus:ring-primary outline-none">
+                        <option value="number">Hiển thị theo Số (1, 2, 3...)</option>
+                        <option value="alpha" selected>Hiển thị theo Chữ cái (A, B, C...)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-primary">Đỉnh xuất phát (Giả sử bắt đầu H từ):</label>
+                    <input id="start-vertex" type="text" value="A" class="w-full rounded border-outline-variant p-2 text-sm focus:ring-1 focus:ring-primary outline-none uppercase font-bold text-center">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Ma trận liền kề đồ thị vô hướng (0 hoặc 1):</label>
+                    <textarea id="matrix-input" rows="5" class="w-full font-mono text-sm rounded border-outline-variant p-2 resize-y focus:ring-1 focus:ring-primary outline-none">0 1 1 1 1 0 1 1
+1 0 1 0 0 0 0 0
+1 1 0 1 1 1 0 0
+1 0 1 0 0 1 0 0
+1 0 1 0 0 1 0 1
+0 0 1 1 1 0 0 1
+1 0 0 0 0 0 0 1
+1 0 0 0 1 1 1 0</textarea>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button id="btn-draw" class="flex-1 bg-gray-100 hover:bg-gray-200 text-on-surface font-semibold py-2 px-4 rounded text-sm transition-colors">
+                        Đồng bộ từ Ma trận
+                    </button>
+                    <button id="btn-run" class="flex-[1.5] bg-primary hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-sm transition-colors shadow">
+                        Biện luận Hamilton
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-surface border border-outline-variant rounded-xl p-5 flex flex-col gap-2 shadow-sm">
+                <h3 class="text-base font-bold flex items-center gap-1 text-primary">
+                    <span class="material-symbols-outlined text-sm">code</span> Mã nguồn thuật toán (Python)
+                </h3>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[220px] min-h-[150px] max-h-[500px] resize-y">
+<pre><code>def hamiltonian_cycle(graph, path, pos):
+    if pos == len(graph):
+        return graph[path[pos-1]][path[0]] == 1
+    for v in range(len(graph)):
+        if is_valid(v, graph, path, pos):
+            path[pos] = v
+            if hamiltonian_cycle(graph, path, pos + 1):
+                return True
+            path[pos] = -1
+    return False</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 flex flex-col gap-6">
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">hub</span> Trực quan hóa hình vẽ đồ thị
+                </h2>
+                
+                <div class="flex flex-wrap gap-1 bg-gray-50 p-2 rounded-lg border border-outline-variant">
+                    <button id="mode-node" class="px-3 py-1.5 text-xs font-bold bg-primary text-white rounded transition-colors flex items-center gap-1 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">add_circle</span> Đỉnh
+                    </button>
+                    <button id="mode-edge" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1 hover:bg-gray-300">
+                        <span class="material-symbols-outlined text-sm">linear_scale</span> Cạnh vô hướng
+                    </button>
+                    <button id="mode-delete" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1 hover:bg-gray-300">
+                        <span class="material-symbols-outlined text-sm">delete</span> Xóa
+                    </button>
+                    <button id="btn-reset-graph" class="px-3 py-1.5 text-xs font-bold bg-red-600 text-white rounded hover:bg-red-700 ml-auto transition-colors flex items-center gap-1 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">restart_alt</span> Làm mới
+                    </button>
+                </div>
+
+                <div class="border border-outline-variant rounded-lg overflow-auto resize-y h-[450px] min-h-[250px] bg-[#fafafa]" id="resize-container">
+                    <div id="network-container" class="w-full h-full"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section id="output-section" class="w-full px-6 max-w-[1200px] mx-auto pb-12 hidden">
+        <div class="bg-surface border border-outline-variant rounded-xl p-8 shadow-md">
+            <h2 class="text-xl font-bold text-primary mb-2 border-b-2 border-primary pb-3 uppercase text-center">
+                TIẾN TRÌNH BIỆN LUẬN LOGIC THEO TẬP QUY TẮC CHI TIẾT
+            </h2>
+            <div class="text-center text-xs text-amber-700 font-semibold italic mb-6 bg-amber-50 border border-amber-200 rounded p-2 max-w-[700px] mx-auto">
+                * Lưu ý: Vì bài toán chu trình Hamilton khá phức tạp nên không thể đưa ra lời giải chính xác: mọi biện luận chỉ là cơ sở để tham khảo.
+            </div>
+
+            <div id="hamilton-analysis-container" class="space-y-4 font-mono text-sm md:text-base text-on-surface leading-relaxed">
+            </div>
+
+            <div class="mt-8 p-5 bg-blue-50 border-l-4 border-primary rounded-r-lg shadow-sm">
+                <div class="font-bold text-lg mb-2 text-blue-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined">verified</span> Kết luận chung cuộc:
+                </div>
+                <div id="final-sequence" class="font-mono font-bold text-red-700 text-lg tracking-wide"></div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/algorithms/hamilton.js"></script>
+</body>
+</html>

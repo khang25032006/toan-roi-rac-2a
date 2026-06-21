@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Visual Toán Rời Rạc 2A - BFS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004ac6",
+                        "background": "#f7f9fb",
+                        "surface": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434655"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex flex-col min-h-screen">
+
+    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 max-w-[1200px] mx-auto py-4">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl">account_tree</span>
+                <span class="text-xl font-bold text-primary">Duyệt Đồ Thị (BFS) - Công cụ vẽ tương tác</span>
+            </div>
+            <a class="text-sm font-semibold text-primary hover:underline flex items-center gap-1" href="index.html">
+                <span class="material-symbols-outlined text-sm">arrow_back</span> Quay lại trang chủ
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full px-6 max-w-[1200px] mx-auto py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-6 flex flex-col gap-6">
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">grid_on</span> Cấu hình dữ liệu đầu vào
+                </h2>
+                
+                <div class="bg-blue-50 border-l-4 border-primary p-3 text-xs text-on-surface-variant rounded">
+                    <strong>Tương tác chuột nhanh:</strong><br>
+                    • Chọn chế độ tương ứng bên cột Trực quan hóa để thêm Đỉnh, Cạnh, Cung hoặc Xóa.<br>
+                    • Đồ thị tự động cập nhật đồng bộ sang Ma trận kề bên dưới.
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Số đỉnh đồ thị:</label>
+                        <input id="vertex-count" type="number" value="5" min="1" max="20" class="w-full rounded border-outline-variant p-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Đỉnh bắt đầu duyệt:</label>
+                        <input id="start-vertex" type="number" value="1" min="1" max="20" class="w-full rounded border-outline-variant p-2 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Ma trận kề (Đỉnh bắt đầu từ 1 - Có thể kéo góc dưới để dãn ô):</label>
+                    <textarea id="matrix-input" rows="5" class="w-full font-mono text-sm rounded border-outline-variant p-2 resize-y">0 1 1 0 0
+1 0 0 1 1
+1 0 0 0 0
+0 1 0 0 0
+0 1 0 0 0</textarea>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btn-draw" class="flex-1 bg-gray-100 hover:bg-gray-200 text-on-surface font-semibold py-2 px-4 rounded text-sm transition-colors">
+                        Đồng bộ từ Ma trận
+                    </button>
+                    <button id="btn-run" class="flex-1 bg-primary hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-sm transition-colors">
+                        Chạy thuật toán BFS
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán (Python)
+                </h2>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[220px] min-h-[150px] max-h-[500px] resize-y">
+<pre><code>def bfs(graph, start):
+    visited = [False] * (len(graph) + 1)
+    queue = [start]
+    visited[start] = True
+    bfs_order = []
+    
+    while queue:
+        u = queue.pop(0)
+        bfs_order.append(u)
+        for v in range(1, len(graph) + 1):
+            if graph[u-1][v-1] == 1 and not visited[v]:
+                queue.append(v)
+                visited[v] = True
+    return bfs_order</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-6 flex flex-col gap-6">
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">hub</span> Trực quan hóa hình vẽ
+                </h2>
+                
+                <div class="flex flex-wrap gap-1 bg-gray-50 p-2 rounded-lg border border-outline-variant">
+                    <button id="mode-node" class="px-3 py-1.5 text-xs font-bold bg-primary text-white rounded transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">add_circle</span> Đỉnh
+                    </button>
+                    <button id="mode-edge" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">horizontal_rule</span> Cạnh (Vô hướng)
+                    </button>
+                    <button id="mode-arc" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">arrow_right_alt</span> Cung (Có hướng)
+                    </button>
+                    <button id="mode-delete" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">delete</span> Xóa
+                    </button>
+                    <button id="btn-reset-graph" class="px-3 py-1.5 text-xs font-bold bg-red-600 text-white rounded hover:bg-red-700 ml-auto transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">restart_alt</span> Làm mới
+                    </button>
+                </div>
+
+                <div class="border border-outline-variant rounded-lg overflow-auto resize-y h-[400px] min-h-[250px] max-h-[700px]" id="resize-container">
+                    <div id="network-container" class="w-full h-full"></div>
+                </div>
+                
+                <div class="border-t pt-4">
+                    <h3 class="text-sm font-bold mb-1">Thứ tự duyệt BFS (Dạng chuỗi):</h3>
+                    <div id="bfs-output" class="font-mono bg-gray-50 p-2 rounded text-primary font-bold min-h-[36px] flex items-center">Chưa có kết quả</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section id="output-section" class="w-full px-6 max-w-[1200px] mx-auto pb-12 hidden">
+        <div class="bg-surface border border-outline-variant rounded-xl p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined">table_view</span> BẢNG TRẠNG THÁI HÀNG ĐỢI VÀ DANH SÁCH ĐỈNH DUYỆT CỦA BFS
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse border border-outline-variant text-sm">
+                    <thead>
+                        <tr class="bg-primary text-white text-left font-bold">
+                            <th class="border border-outline-variant p-3 w-16 text-center">STT</th>
+                            <th class="border border-outline-variant p-3 w-4/12">Trạng thái hàng đợi (Queue)</th>
+                            <th class="border border-outline-variant p-3 w-5/12">Danh sách đỉnh được duyệt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="result-tbody" class="divide-y divide-outline-variant"></tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 p-4 bg-green-50 border-l-4 border-green-600 rounded-r-lg">
+                <p class="text-base text-green-900">
+                    <strong class="font-bold">Kết quả duyệt cuối cùng:</strong> 
+                    <span id="final-sequence" class="font-mono font-bold text-red-700 ml-2 text-lg"></span>
+                </p>
+                <p class="text-xs text-green-700 mt-1">
+                    • <strong>Các cạnh thuộc Cây khung BFS:</strong> <span id="tree-output" class="font-mono font-bold"></span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/algorithms/bfs.js"></script>
+</body>
+</html>

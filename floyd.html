@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Visual Toán Rời Rạc 2A - Thuật toán Floyd</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004ac6",
+                        "background": "#f7f9fb",
+                        "surface": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434655"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        .math { font-family: "Cambria", "Times New Roman", serif; font-style: italic; }
+        .matrix-table { border-collapse: collapse; margin: 10px auto; font-size: 13px; }
+        .matrix-table th, .matrix-table td { border: 1px solid #c3c6d7; padding: 6px 10px; text-align: center; min-width: 40px; }
+        .matrix-table th { background-color: #f1f5f9; font-weight: bold; }
+        .matrix-highlight-rc { background-color: #fee2e2 !important; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex flex-col min-h-screen">
+
+    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 max-w-[1200px] mx-auto py-4">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl">grid_view</span>
+                <span class="text-xl font-bold text-primary">Thuật toán Floyd - Đường đi ngắn nhất giữa tất cả các cặp đỉnh</span>
+            </div>
+            <a class="text-sm font-semibold text-primary hover:underline flex items-center gap-1" href="index.html">
+                <span class="material-symbols-outlined text-sm">arrow_back</span> Quay lại trang chủ
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full px-6 max-w-[1200px] mx-auto py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary border-b pb-2">
+                    <span class="material-symbols-outlined">settings</span> Cấu hình dữ liệu đầu vào
+                </h2>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Chế độ hiển thị tên đỉnh:</label>
+                    <select id="display-mode" class="w-full rounded border-outline-variant p-2 text-sm font-semibold bg-gray-50 focus:ring-1 focus:ring-primary outline-none">
+                        <option value="number">Hiển thị theo Số (1, 2, 3...)</option>
+                        <option value="alpha" selected>Hiển thị theo Chữ cái (A, B, C...)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-primary">Đỉnh xuất phát (Để truy vết xem kết luận):</label>
+                    <input id="start-vertex" type="text" value="A" class="w-full rounded border-outline-variant p-2 text-sm focus:ring-1 focus:ring-primary outline-none uppercase font-bold text-center">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t pt-3">
+                    <div>
+                        <label class="block text-xs font-bold text-red-600 uppercase mb-1">Bỏ qua đỉnh:</label>
+                        <input id="skip-vertices" type="text" placeholder="VD: C, D" class="w-full rounded border-red-300 p-2 text-sm focus:ring-1 focus:ring-red-600 outline-none uppercase text-center font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-green-700 uppercase mb-1">Bắt buộc đi qua:</label>
+                        <input id="must-pass-vertex" type="text" placeholder="VD: B" class="w-full rounded border-green-300 p-2 text-sm focus:ring-1 focus:ring-green-700 outline-none uppercase text-center font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Ma trận trọng số kề (Cho phép nhận số âm, 0 là không cạnh):</label>
+                    <textarea id="matrix-input" rows="5" class="w-full font-mono text-sm rounded border-outline-variant p-2 resize-y focus:ring-1 focus:ring-primary outline-none">0 6 9 0 0
+0 0 2 3 0
+0 0 0 0 1
+0 0 0 0 5
+0 0 0 0 0</textarea>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button id="btn-draw" class="flex-1 bg-gray-100 hover:bg-gray-200 text-on-surface font-semibold py-2 px-4 rounded text-sm transition-colors">
+                        Đồng bộ từ Ma trận
+                    </button>
+                    <button id="btn-run" class="flex-[1.5] bg-primary hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-sm transition-colors shadow">
+                        Chạy thuật toán Floyd
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-surface border border-outline-variant rounded-xl p-5 flex flex-col gap-2 shadow-sm">
+                <h3 class="text-base font-bold flex items-center gap-1 text-primary">
+                    <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán Floyd (Python)
+                </h3>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[185px]">
+<pre><code>def floyd_warshall(matrix):
+    n = len(matrix)
+    dist = [row[:] for row in matrix]
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if dist[i][j] > dist[i][k] + dist[k][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    return dist</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 flex flex-col gap-6">
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">hub</span> Trực quan hóa hình vẽ đồ thị
+                </h2>
+                
+                <div class="flex flex-wrap gap-1 bg-gray-50 p-2 rounded-lg border border-outline-variant">
+                    <button id="mode-node" class="px-3 py-1.5 text-xs font-bold bg-primary text-white rounded transition-colors flex items-center gap-1 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">add_circle</span> Đỉnh
+                    </button>
+                    <button id="mode-edge" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1 hover:bg-gray-300">
+                        <span class="material-symbols-outlined text-sm">linear_scale</span> Cạnh vô hướng
+                    </button>
+                    <button id="mode-arc" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1 hover:bg-gray-300">
+                        <span class="material-symbols-outlined text-sm">arrow_right_alt</span> Cung có hướng
+                    </button>
+                    <button id="mode-delete" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1 hover:bg-gray-300">
+                        <span class="material-symbols-outlined text-sm">delete</span> Xóa
+                    </button>
+                    <button id="btn-reset-graph" class="px-3 py-1.5 text-xs font-bold bg-red-600 text-white rounded hover:bg-red-700 ml-auto transition-colors flex items-center gap-1 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">restart_alt</span> Làm mới
+                    </button>
+                </div>
+
+                <div class="border border-outline-variant rounded-lg overflow-auto resize-y h-[340px] min-h-[220px] bg-[#fafafa]" id="resize-container">
+                    <div id="network-container" class="w-full h-full"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section id="output-section" class="w-full px-6 max-w-[1200px] mx-auto pb-12 hidden">
+        <div class="bg-surface border border-outline-variant rounded-xl p-8 shadow-md">
+            <h2 class="text-xl font-bold text-primary mb-6 border-b-2 border-primary pb-3 uppercase text-center">
+                MÔ PHỎNG MA TRẬN QUY HOẠCH ĐỘNG FLOYD CHUẨN GIÁO TRÌNH
+            </h2>
+            <div id="floyd-condition-info" class="text-sm font-semibold text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border border-blue-200"></div>
+
+            <div id="matrices-steps-container" class="space-y-12"></div>
+
+            <div class="mt-12 p-6 bg-green-50 border-l-4 border-green-600 rounded-r-lg">
+                <div class="font-bold text-lg mb-3 text-green-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined">analytics</span> Kết quả đường đi ngắn nhất từ đỉnh xuất phát:
+                </div>
+                <div id="paths-summary-output" class="font-mono text-sm space-y-2 text-on-surface grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/algorithms/floyd.js"></script>
+</body>
+</html>

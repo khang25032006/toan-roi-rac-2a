@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Visual Toán Rời Rạc 2A - Duyệt Cây Đệ Quy</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004ac6",
+                        "background": "#f7f9fb",
+                        "surface": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434655"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        .math { font-family: "Cambria", "Times New Roman", serif; font-style: italic; }
+        .log-line { font-family: 'Courier New', Courier, monospace; white-space: pre; line-height: 1.6; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex flex-col min-h-screen">
+
+    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 max-w-[1200px] mx-auto py-4">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl">account_tree</span>
+                <span class="text-xl font-bold text-primary">Các phép duyệt cây hệ thống (Pre, In, Post-Order)</span>
+            </div>
+            <a class="text-sm font-semibold text-primary hover:underline flex items-center gap-1" href="index.html">
+                <span class="material-symbols-outlined text-sm">arrow_back</span> Quay lại trang chủ
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full px-6 max-w-[1200px] mx-auto py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary border-b pb-2">
+                    <span class="material-symbols-outlined">settings</span> Cấu hình dữ liệu đầu vào
+                </h2>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Chế độ hiển thị đỉnh:</label>
+                        <select id="display-mode" class="w-full rounded border-outline-variant p-2 text-sm font-semibold bg-gray-50 focus:ring-1 focus:ring-primary outline-none">
+                            <option value="number">Dạng Số (1, 2, 3...)</option>
+                            <option value="alpha" selected>Dạng Chữ (a, b, c...)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Phương pháp duyệt:</label>
+                        <select id="traversal-type" class="w-full rounded border-outline-variant p-2 text-sm font-semibold bg-gray-50 focus:ring-1 focus:ring-primary outline-none">
+                            <option value="pre" selected>Duyệt Trước (Tiền tự)</option>
+                            <option value="in">Duyệt Trong (Trung tự)</option>
+                            <option value="post">Duyệt Sau (Hậu tự)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-primary">Đỉnh gốc của cây (Root):</label>
+                    <input id="root-vertex" type="text" value="a" class="w-full rounded border-outline-variant p-2 text-sm focus:ring-1 focus:ring-primary outline-none uppercase font-bold text-center">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Ma trận liền kề của cây (0: không nối, 1: có nối):</label>
+                    <textarea id="matrix-input" rows="6" class="w-full font-mono text-xs rounded border-outline-variant p-2 resize-y focus:ring-1 focus:ring-primary outline-none">0 1 1 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 1 1 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 1 1 1 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 1 1 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 1 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1 1 1
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</textarea>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button id="btn-draw" class="flex-1 bg-gray-100 hover:bg-gray-200 text-on-surface font-semibold py-2 px-4 rounded text-sm transition-colors">
+                        Đồng bộ Ma trận
+                    </button>
+                    <button id="btn-run" class="flex-[1.5] bg-primary hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-sm transition-colors shadow">
+                        Thực hiện phép duyệt
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-surface border border-outline-variant rounded-xl p-5 flex flex-col gap-2 shadow-sm">
+                <h3 class="text-base font-bold flex items-center gap-1 text-primary">
+                    <span class="material-symbols-outlined text-sm">code</span> Cấu trúc giải thuật Python tương ứng
+                </h3>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[180px] resize-y" id="python-code-box">
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 flex flex-col gap-6">
+            <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">hub</span> Khung dựng cây phân tầng tự động
+                </h2>
+                
+                <div class="flex flex-wrap gap-1 bg-gray-50 p-2 rounded-lg border border-outline-variant">
+                    <button id="mode-node" class="px-3 py-1.5 text-xs font-bold bg-primary text-white rounded transition-colors flex items-center gap-1 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">add_circle</span> Đỉnh
+                    </button>
+                    <button id="mode-edge" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1 hover:bg-gray-300">
+                        <span class="material-symbols-outlined text-sm">share</span> Nhánh con (Trên &rarr; Dưới)
+                    </button>
+                    <button id="mode-delete" class="px-3 py-1.5 text-xs font-bold bg-gray-200 text-on-surface rounded transition-colors flex items-center gap-1 hover:bg-gray-300">
+                        <span class="material-symbols-outlined text-sm">delete</span> Xóa
+                    </button>
+                    <button id="btn-reset-graph" class="px-3 py-1.5 text-xs font-bold bg-red-600 text-white rounded hover:bg-red-700 ml-auto transition-colors flex items-center gap-1 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">restart_alt</span> Làm mới
+                    </button>
+                </div>
+
+                <div class="border border-outline-variant rounded-lg overflow-auto resize-y h-[420px] min-h-[250px] bg-[#fafafa]" id="resize-container">
+                    <div id="network-container" class="w-full h-full"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section id="output-section" class="w-full px-6 max-w-[1200px] mx-auto pb-12 hidden">
+        <div class="bg-surface border border-outline-variant rounded-xl p-8 shadow-md">
+            <h2 class="text-xl font-bold text-primary mb-6 border-b-2 border-primary pb-3 uppercase text-center" id="traversal-title">
+                LỜI GIẢI PHÂN RÃ ĐỆ QUY CHI TIẾT TỪNG BƯỚC
+            </h2>
+
+            <div id="traversal-log-box" class="p-6 bg-slate-50 border border-outline-variant rounded-xl overflow-x-auto text-on-surface shadow-inner font-mono text-sm space-y-1">
+            </div>
+
+            <div class="mt-8 p-5 bg-green-50 border-l-4 border-green-600 rounded-r-lg shadow-sm">
+                <div class="font-bold text-lg mb-2 text-green-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined">check_circle</span> Dãy kết quả duyệt cây thu được:
+                </div>
+                <div id="final-sequence" class="font-mono font-bold text-red-700 text-xl tracking-wide"></div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/algorithms/binary-tree.js"></script>
+</body>
+</html>
