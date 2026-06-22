@@ -13,7 +13,7 @@ const modeButtons = {
 function formatNodeLabel(id) {
     const mode = document.getElementById('display-mode').value;
     if (mode === 'alpha') {
-        return String.fromCharCode(64 + id); // 1 -> 'A', 2 -> 'B'
+        return String.fromCharCode(64 + id);
     }
     return String(id);
 }
@@ -187,6 +187,48 @@ function initNetwork() {
     });
 }
 
+function checkConnectedEuler(n, matrix, isDirected) {
+    // 1. Tìm tất cả các đỉnh thực sự có chứa cạnh nối (bỏ qua các đỉnh cô lập bậc 0)
+    let verticesWithEdges = [];
+    for (let i = 0; i < n; i++) {
+        let hasEdge = false;
+        for (let j = 0; j < n; j++) {
+            if (matrix[i][j] > 0 || matrix[j][i] > 0) {
+                hasEdge = true;
+                break;
+            }
+        }
+        if (hasEdge) verticesWithEdges.push(i);
+    }
+    
+    // Nếu đồ thị hoàn toàn không có cạnh nào thì coi như liên thông rỗng
+    if (verticesWithEdges.length === 0) return true;
+
+    // 2. Chọn đỉnh đầu tiên THỰC SỰ CÓ CẠNH để làm gốc loang BFS
+    let startVertex = verticesWithEdges[0];
+    let visited = new Set();
+    let queue = [startVertex];
+    visited.add(startVertex);
+
+    while (queue.length > 0) {
+        let u = queue.shift();
+        for (let v = 0; v < n; v++) {
+            if (matrix[u][v] > 0 || (isDirected === false && matrix[v][u] > 0)) {
+                if (!visited.has(v)) {
+                    visited.add(v);
+                    queue.push(v);
+                }
+            }
+        }
+    }
+
+    // 3. Kiểm tra xem tất cả các đỉnh có cạnh có nằm chung trong 1 thành phần liên thông không
+    for (let v of verticesWithEdges) {
+        if (!visited.has(v)) return false; // Có đỉnh chứa cạnh nhưng không đi tới được
+    }
+    return true;
+}
+
 function runEulerAlgorithm() {
     let matrix = parseMatrix();
     const n = matrix.length;
@@ -198,6 +240,23 @@ function runEulerAlgorithm() {
     let isDirected = document.getElementById('graph-type').value === 'directed';
     let startInput = parseNodeInput(document.getElementById('start-vertex').value);
 
+    edgesDataSet.get().forEach(e => {
+        edgesDataSet.update({ id: e.id, color: '#737686', width: 2 });
+    });
+
+    // 1. KIỂM TRA TÍNH LIÊN THÔNG ĐẦU TIÊN THEO GỢI Ý
+    let isConnected = checkConnectedEuler(n, matrix, isDirected);
+    if (!isConnected) {
+        document.getElementById('euler-condition-result').className = "mt-3 text-base font-bold text-red-900 bg-red-50 p-3 rounded-lg border border-red-200";
+        document.getElementById('euler-condition-result').innerHTML = "ĐỒ THỊ KHÔNG LIÊN THÔNG! Tồn tại các thành phần chứa cạnh độc lập biệt lập với nhau.";
+        document.getElementById('degree-analysis').innerHTML = "<div class='col-span-full text-center text-gray-400 italic p-2'>Bị chặn do đồ thị không liên thông</div>";
+        document.getElementById('algo-process-block').classList.add('hidden');
+        document.getElementById('final-sequence').innerHTML = "<span class='text-red-600 font-bold'>LỖI: Không thể tìm lộ trình Euler trên đồ thị không liên thông!</span>";
+        document.getElementById('output-section').classList.remove('hidden');
+        document.getElementById('output-section').scrollIntoView({ behavior: 'smooth' });
+        return; // Dừng ngay lập tức chương trình!
+    }
+
     let inDeg = {}, outDeg = {}, deg = {};
     activeIds.forEach(id => { inDeg[id] = 0; outDeg[id] = 0; deg[id] = 0; });
 
@@ -207,6 +266,7 @@ function runEulerAlgorithm() {
                 outDeg[i + 1] += matrix[i][j];
                 inDeg[j + 1] += matrix[i][j];
                 deg[i + 1] += matrix[i][j];
+                if (!isDirected) deg[j + 1] += matrix[i][j];
             }
         }
     }
@@ -268,7 +328,7 @@ function runEulerAlgorithm() {
 
     if (!isEulerian && !isSemiEulerian) {
         document.getElementById('algo-process-block').classList.add('hidden');
-        document.getElementById('final-sequence').innerHTML = "<span class='text-red-600'>Không tồn tại lộ trình Euler cho cấu hình đồ thị này!</span>";
+        document.getElementById('final-sequence').innerHTML = "<span class='text-red-600'>Không thỏa mãn hệ thức bậc &rArr; Không có lộ trình Euler!</span>";
         document.getElementById('output-section').classList.remove('hidden');
         return;
     }
@@ -276,6 +336,12 @@ function runEulerAlgorithm() {
     document.getElementById('algo-process-block').classList.remove('hidden');
 
     let startNode = 1; 
+    for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+            if (matrix[i][j] > 0) { startNode = i + 1; break; }
+        }
+    }
+
     if (!isDirected) {
         if (isSemiEulerian) startNode = oddNodes[0]; 
         if (startInput && startInput <= n) {
@@ -294,19 +360,16 @@ function runEulerAlgorithm() {
     let tbodyHtml = "";
     let step = 1;
 
-    // Khởi tạo dòng đầu tiên
     tbodyHtml += `
         <tr class="bg-gray-100 font-semibold">
             <td class="p-3 text-center border border-gray-200 text-gray-500">Khởi tạo</td>
             <td class="p-3 text-center border border-gray-200">-</td>
-            <td class="p-3 text-center border border-gray-200 text-gray-500">-</td>
             <td class="p-3 border border-gray-200 text-purple-700 font-mono">[${stack.map(formatNodeLabel).join(', ')}]</td>
             <td class="p-3 border border-gray-200 text-green-700">[]</td>
         </tr>`;
 
-    // VÒNG LẶP THEO MÃ GIẢ CHUẨN ĐƯỢC PHÂN TÁCH LỆNH XUẤT UI CHẶT CHẼ
     while (stack.length > 0) {
-        let s = stack[stack.length - 1]; // s = get(stack);
+        let s = stack[stack.length - 1]; 
         let sIdx = s - 1;
         let hasNeighbor = false;
         let actionCell = "";
@@ -317,21 +380,19 @@ function runEulerAlgorithm() {
                 nextNode = vIdx + 1;
                 hasNeighbor = true;
                 
-                // Nhánh IF: Tiến hành đi tiếp và xóa cạnh
                 actionCell = `(${formatNodeLabel(s)}, ${formatNodeLabel(nextNode)})`;
                 graphCopy[sIdx][vIdx]--; 
                 if (!isDirected) graphCopy[vIdx][sIdx]--; 
                 
-                stack.push(nextNode); // push(stack, t);
+                stack.push(nextNode); 
                 break;
             }
         }
 
-        // Nhánh ELSE: Đỉnh s bị cụt đường
         if (!hasNeighbor) {
             actionCell = `<span class="text-red-600 font-bold">Cụt đường!</span>`;
-            let popped = stack.pop(); // s = pop(stack);
-            CE.push(popped); // s => CE;
+            let popped = stack.pop(); 
+            CE.push(popped); 
         }
 
         let displayStack = stack.map(formatNodeLabel).join(', ');
@@ -349,7 +410,14 @@ function runEulerAlgorithm() {
 
     document.getElementById('result-tbody').innerHTML = tbodyHtml;
 
-    // Lật ngược CE để thu được chu trình Euler cuối cùng
+    for (let i = 0; i < CE.length - 1; i++) {
+        let u = CE[i], v = CE[i+1];
+        let edgeId = isDirected ? `${v}-${u}` : `${Math.min(u,v)}-${Math.max(u,v)}`;
+        if (edgesDataSet.get(edgeId)) {
+            edgesDataSet.update({ id: edgeId, color: '#16a34a', width: 4 });
+        }
+    }
+
     let finalPath = [...CE].reverse().map(formatNodeLabel).join(' &rarr; ');
     document.getElementById('final-sequence').innerHTML = finalPath;
 

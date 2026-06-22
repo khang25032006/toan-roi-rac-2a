@@ -74,10 +74,18 @@ document.getElementById('btn-reset-graph').addEventListener('click', () => {
 function parseMatrix() {
     const text = document.getElementById("matrix-input").value.trim();
     if (!text) return [];
-    return text.split("\n").map(row => 
-        row.trim().split(/\s+/).map(num => {
+    return text.split("\n").map((row, rIdx) => 
+        row.trim().split(/\s+/).map((num, cIdx) => {
+            let clean = num.toLowerCase().trim();
+            if (clean === 'i' || clean === 'inf' || clean === '∞') {
+                return Infinity;
+            }
             const val = parseFloat(num);
-            return isNaN(val) || val < 0 ? 0 : val;
+            if (isNaN(val)) return Infinity;
+            if (val === 0 && rIdx !== cIdx) {
+                return 0; 
+            }
+            return val;
         })
     );
 }
@@ -87,7 +95,9 @@ function updateMatrixFromUI() {
     const n = ids.length;
     if (n === 0) { document.getElementById("matrix-input").value = ""; return; }
     
-    let matrix = Array.from({ length: n }, () => Array(n).fill(0));
+    let matrix = Array.from({ length: n }, () => Array(n).fill('I'));
+    for (let i = 0; i < n; i++) matrix[i][i] = 0;
+
     const idToIndex = {};
     ids.forEach((id, index) => { idToIndex[id] = index; });
     
@@ -119,7 +129,8 @@ function drawGraph() {
     }
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
-            if (matrix[i][j] > 0) {
+            if (matrix[i][j] !== Infinity) {
+                if (i === j) continue;
                 if (matrix[j][i] === matrix[i][j] && i < j) {
                     edgesDataSet.add({
                         id: `${i+1}-${j+1}`,
@@ -317,7 +328,7 @@ function solveDijkstraEngine(start, end, skipNodes, activeIds, matrixMap) {
         if (u === end) break;
 
         activeIds.forEach(v => {
-            if (!finalized[v] && matrixMap[u] && matrixMap[u][v] !== undefined && matrixMap[u][v] > 0) {
+            if (!finalized[v] && matrixMap[u] && matrixMap[u][v] !== undefined && matrixMap[u][v] !== Infinity) {
                 let cost = matrixMap[u][v];
                 if (dist[u] + cost < dist[v]) {
                     dist[v] = dist[u] + cost;
@@ -365,14 +376,21 @@ function runDijkstra() {
         return;
     }
 
+    // Reset lại toàn bộ màu và độ dày của các cạnh về mặc định trước khi tô màu lộ trình mới
+    edgesDataSet.get().forEach(e => {
+        edgesDataSet.update({ id: e.id, color: '#737686', width: 2 });
+    });
+
     let matrixMap = {};
     activeIds.forEach(id => matrixMap[id] = {});
     
     let matrix = parseMatrix();
     activeIds.forEach((i, rIdx) => {
         activeIds.forEach((j, cIdx) => {
-            if (matrix[rIdx] && matrix[rIdx][cIdx] > 0) {
+            if (matrix[rIdx] && matrix[rIdx][cIdx] !== Infinity) {
                 matrixMap[i][j] = matrix[rIdx][cIdx];
+            } else {
+                matrixMap[i][j] = Infinity;
             }
         });
     });
@@ -391,6 +409,7 @@ function runDijkstra() {
 
     let finalRows = [];
     let pathResults = [];
+    let edgesToColor = new Set();
 
     if (isNaN(mustPass) || mustPass === null || !activeIds.includes(mustPass) || skipNodes.includes(mustPass)) {
         let res = solveDijkstraEngine(startVertex, -1, skipNodes, activeIds, matrixMap);
@@ -408,12 +427,18 @@ function runDijkstra() {
             let path = [];
             let curr = target;
             while (curr !== startVertex && curr !== null) {
-                path.push(formatNodeLabel(curr));
-                curr = res.trace[curr];
+                path.push(curr);
+                let prev = res.trace[curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev;
             }
-            path.push(formatNodeLabel(startVertex));
+            path.push(startVertex);
             path.reverse();
-            pathResults.push(`<div><span class="math font-bold">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)})</span> = <span class="font-bold text-primary">${res.dist[target]}</span> &xrArr; Đường đi: <span class="font-bold text-green-700">${path.join(' &rarr; ')}</span></div>`);
+            let formatPath = path.map(formatNodeLabel).join(' &rarr; ');
+            pathResults.push(`<div><span class="math font-bold">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)})</span> = <span class="font-bold text-primary">${res.dist[target]}</span> &xrArr; Đường đi: <span class="font-bold text-green-700">${formatPath}</span></div>`);
         });
     } else {
         let res1 = solveDijkstraEngine(startVertex, mustPass, skipNodes, activeIds, matrixMap);
@@ -442,18 +467,41 @@ function runDijkstra() {
 
             let p1 = [];
             let curr = mustPass;
-            while(curr !== startVertex && curr !== null) { p1.push(formatNodeLabel(curr)); curr = res1.trace[curr]; }
-            p1.push(formatNodeLabel(startVertex)); p1.reverse();
+            while(curr !== startVertex && curr !== null) { 
+                p1.push(curr); 
+                let prev = res1.trace[curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev; 
+            }
+            p1.push(startVertex); p1.reverse();
 
             let p2 = [];
             curr = target;
-            while(curr !== mustPass && curr !== null) { p2.push(formatNodeLabel(curr)); curr = res2.trace[curr]; }
+            while(curr !== mustPass && curr !== null) { 
+                p2.push(curr); 
+                let prev = res2.trace[curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev; 
+            }
             p2.reverse();
 
-            let fullPath = [...p1, ...p2];
+            let fullPath = [...p1, ...p2].map(formatNodeLabel);
             pathResults.push(`<div><span class="math font-bold">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)})</span> = <span class="font-bold text-primary">${d1 + d2}</span> &xrArr; Đường đi bắt buộc qua ${formatNodeLabel(mustPass)}: <span class="font-bold text-green-700">${fullPath.join(' &rarr; ')}</span></div>`);
         });
     }
+
+    // THỰC HIỆN TÔ MÀU CÁC CẠNH THUỘC ĐƯỜNG ĐI KẾT QUẢ ĐÃ TÌM ĐƯỢC
+    edgesToColor.forEach(edgeId => {
+        if (edgesDataSet.get(edgeId)) {
+            edgesDataSet.update({ id: edgeId, color: '#16a34a', width: 4 });
+        }
+    });
 
     let tbodyHtml = "";
     finalRows.forEach(row => {

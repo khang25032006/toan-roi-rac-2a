@@ -104,7 +104,7 @@ function drawGraph() {
                         }
                     }
                 } else { 
-                    edgesDataSet.add({ from: fromNode, to: toNode, arrows: 'to', color: '#737686', width: 2 });
+                    edgesDataSet.add({ id: `${fromNode}->${toNode}`, from: fromNode, to: toNode, arrows: 'to', color: '#737686', width: 2 });
                 }
             }
         }
@@ -153,14 +153,14 @@ function initNetwork() {
                         if (currentMode === 'edge') {
                             edgesDataSet.add({ id: `${Math.min(fromNode, toNode)}-${Math.max(fromNode, toNode)}`, from: fromNode, to: toNode, color: '#737686', width: 2 });
                         } else {
-                            edgesDataSet.add({ from: fromNode, to: toNode, arrows: 'to', color: '#737686', width: 2 });
+                            edgesDataSet.add({ id: `${fromNode}->${toNode}`, from: fromNode, to: toNode, arrows: 'to', color: '#737686', width: 2 });
                         }
                         updateMatrixFromUI();
                     }
                     edgeStartNodeId = null;
                 }
             } else {
-                if(edgeStartNodeId !== null) {
+                if (edgeStartNodeId !== null) {
                     nodesDataSet.update({id: edgeStartNodeId, color: {background: '#ffffff', border: '#004ac6'}});
                     edgeStartNodeId = null;
                 }
@@ -176,7 +176,7 @@ function initNetwork() {
             }
         }
     });
-    // Thêm đoạn này vào dòng cuối cùng ngay trước dấu đóng } của hàm initNetwork()
+
     const resizeObserver = new ResizeObserver(() => {
         if (network) network.fit();
     });
@@ -193,6 +193,11 @@ function runBFS() {
         alert("Đỉnh bắt đầu không hợp lệ hoặc không tồn tại trên đồ thị!");
         return;
     }
+
+    // Khôi phục trạng thái màu sắc và độ dày ban đầu của toàn bộ các cạnh
+    edgesDataSet.get().forEach(e => {
+        edgesDataSet.update({ id: e.id, color: '#737686', width: 2 });
+    });
 
     const idToIndex = {};
     activeIds.forEach((id, index) => { idToIndex[id] = index; });
@@ -224,6 +229,7 @@ function runBFS() {
     let spanningTree = [];
     let steps = [];
     let stepCounter = 1;
+    let edgesToColor = [];
 
     steps.push({
         stt: stepCounter++,
@@ -241,6 +247,10 @@ function runBFS() {
                 queue.push(v);
                 visited[v] = true;
                 spanningTree.push(`(${u}, ${v})`);
+                
+                // Định danh ID cạnh kết quả để tô màu trực quan
+                edgesToColor.push(`${u}->${v}`);
+                edgesToColor.push(`${Math.min(u, v)}-${Math.max(u, v)}`);
             }
         });
 
@@ -250,6 +260,13 @@ function runBFS() {
             visitedState: [...bfsOrder]
         });
     }
+
+    // Tiến hành cập nhật màu xanh lá cây đậm cho các cạnh thuộc cây khung BFS
+    edgesToColor.forEach(edgeId => {
+        if (edgesDataSet.get(edgeId)) {
+            edgesDataSet.update({ id: edgeId, color: '#16a34a', width: 4 });
+        }
+    });
 
     renderResultToTable(steps, bfsOrder, spanningTree);
 }

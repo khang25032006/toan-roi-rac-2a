@@ -71,10 +71,18 @@ document.getElementById('btn-reset-graph').addEventListener('click', () => {
 function parseMatrix() {
     const text = document.getElementById("matrix-input").value.trim();
     if (!text) return [];
-    return text.split("\n").map(row => 
-        row.trim().split(/\s+/).map(num => {
+    return text.split("\n").map((row, rIdx) => 
+        row.trim().split(/\s+/).map((num, cIdx) => {
+            let clean = num.toLowerCase().trim();
+            if (clean === 'i' || clean === 'inf' || clean === '∞') {
+                return Infinity;
+            }
             const val = parseFloat(num);
-            return isNaN(val) ? 0 : val;
+            if (isNaN(val)) return Infinity;
+            if (val === 0 && rIdx !== cIdx) {
+                return 0;
+            }
+            return val;
         })
     );
 }
@@ -84,7 +92,9 @@ function updateMatrixFromUI() {
     const n = ids.length;
     if (n === 0) { document.getElementById("matrix-input").value = ""; return; }
     
-    let matrix = Array.from({ length: n }, () => Array(n).fill(0));
+    let matrix = Array.from({ length: n }, () => Array(n).fill('I'));
+    for (let i = 0; i < n; i++) matrix[i][i] = 0;
+
     const idToIndex = {};
     ids.forEach((id, index) => { idToIndex[id] = index; });
     
@@ -116,7 +126,8 @@ function drawGraph() {
     }
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
-            if (matrix[i][j] !== 0) {
+            if (matrix[i][j] !== Infinity) {
+                if (i === j) continue;
                 if (matrix[j][i] === matrix[i][j] && i < j) {
                     edgesDataSet.add({
                         id: `${i+1}-${j+1}`,
@@ -272,7 +283,6 @@ function initNetwork() {
     resizeObserver.observe(document.getElementById('resize-container'));
 }
 
-// ======================== LOÀI GIẢI BELLMAN-FORD VÀ KẾT XUẤT TIẾN TRÌNH ========================
 function runBellmanFord() {
     drawGraph();
 
@@ -293,12 +303,16 @@ function runBellmanFord() {
         return;
     }
 
-    // Tổ chức danh sách cạnh kề có hướng từ ma trận nhị phân gốc
+    // Trả toàn bộ màu cạnh về màu xám mặc định
+    edgesDataSet.get().forEach(e => {
+        edgesDataSet.update({ id: e.id, color: '#737686', width: 2 });
+    });
+
     let edgeList = [];
     let matrix = parseMatrix();
     activeIds.forEach((i, rIdx) => {
         activeIds.forEach((j, cIdx) => {
-            if (matrix[rIdx] && matrix[rIdx][cIdx] !== 0) {
+            if (matrix[rIdx] && matrix[rIdx][cIdx] !== Infinity) {
                 if (!skipNodes.includes(i) && !skipNodes.includes(j)) {
                     edgeList.push({ from: i, to: j, weight: matrix[rIdx][cIdx] });
                 }
@@ -306,12 +320,6 @@ function runBellmanFord() {
         });
     });
 
-    document.getElementById('start-node-info').innerHTML = `.Đỉnh bắt đầu: <span class="text-primary font-bold">${formatNodeLabel(startVertex)}</span>`;
-    if (skipNodes.length > 0) {
-        document.getElementById('start-node-info').innerHTML += ` (Bỏ qua đỉnh: <span class="text-red-600 font-bold">${skipNodes.map(formatNodeLabel).join(', ')}</span>)`;
-    }
-
-    // Sinh cột bảng tự luận động
     let theadHtml = `<tr><th class="p-3 w-32">Vòng lặp k</th>`;
     displayNodes.forEach(id => {
         theadHtml += `<th class="p-3">Đỉnh ${formatNodeLabel(id)} (d/p)</th>`;
@@ -319,7 +327,6 @@ function runBellmanFord() {
     theadHtml += `</tr>`;
     document.getElementById('result-thead').innerHTML = theadHtml;
 
-    // Tiến trình lõi Bellman-Ford đa điều kiện loang chặng liên hoàn
     function solveCoreBF(startNode) {
         let dist = {}, trace = {};
         activeIds.forEach(id => { dist[id] = Infinity; trace[id] = null; });
@@ -328,14 +335,11 @@ function runBellmanFord() {
 
         let rowsHistory = [];
 
-        // Bước 1: Trạng thái khởi tạo (k = 0)
         let stepZero = { step: "Khởi tạo (k=0)", states: {} };
         activeIds.forEach(id => { stepZero.states[id] = { d: dist[id], p: trace[id] }; });
         rowsHistory.push(stepZero);
 
-        // Bước 2: Lặp n - 1 vòng tối ưu hạ nhãn dần đều
         for (let k = 1; k <= n - 1; k++) {
-            let changed = false;
             let currentDistCopy = { ...dist };
             let currentTraceCopy = { ...trace };
 
@@ -343,7 +347,6 @@ function runBellmanFord() {
                 if (currentDistCopy[edge.from] !== Infinity && currentDistCopy[edge.from] + edge.weight < currentDistCopy[edge.to]) {
                     currentDistCopy[edge.to] = currentDistCopy[edge.from] + edge.weight;
                     currentTraceCopy[edge.to] = edge.from;
-                    changed = true;
                 }
             });
 
@@ -355,7 +358,6 @@ function runBellmanFord() {
             rowsHistory.push(stepRecord);
         }
 
-        // Bước 3: Chạy vòng lặp thứ n để bắt lỗi chu trình âm độc hại
         let hasNegativeCycle = false;
         edgeList.forEach(edge => {
             if (dist[edge.from] !== Infinity && dist[edge.from] + edge.weight < dist[edge.to]) {
@@ -375,7 +377,6 @@ function runBellmanFord() {
         return;
     }
 
-    // Render nội dung bảng tự luận dạng d/p hạ nhãn tuần tiến
     let tbodyHtml = "";
     mainRes.rowsHistory.forEach(row => {
         tbodyHtml += `<tr class="hover:bg-gray-50 transition-colors">`;
@@ -395,8 +396,9 @@ function runBellmanFord() {
     });
     document.getElementById('result-tbody').innerHTML = tbodyHtml;
 
-    // Kết luận truy vết đa điều kiện mở rộng
     let pathResults = [];
+    let edgesToColor = new Set();
+
     if (isNaN(mustPass) || mustPass === null || !activeIds.includes(mustPass) || skipNodes.includes(mustPass)) {
         displayNodes.forEach(target => {
             if (target === startVertex) {
@@ -411,15 +413,20 @@ function runBellmanFord() {
             let curr = target;
             let guard = 0;
             while (curr !== startVertex && curr !== null && guard++ < n) {
-                path.push(formatNodeLabel(curr));
-                curr = mainRes.trace[curr];
+                path.push(curr);
+                let prev = mainRes.trace[curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev;
             }
-            path.push(formatNodeLabel(startVertex));
+            path.push(startVertex);
             path.reverse();
-            pathResults.push(`<div><span class="math font-bold">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)})</span> = <span class="font-bold text-primary">${mainRes.dist[target]}</span> &xrArr; Đường đi: <span class="font-bold text-green-700">${path.join(' &rarr; ')}</span></div>`);
+            let formatPath = path.map(formatNodeLabel).join(' &rarr; ');
+            pathResults.push(`<div><span class="math font-bold">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)})</span> = <span class="font-bold text-primary">${mainRes.dist[target]}</span> &xrArr; Đường đi: <span class="font-bold text-green-700">${formatPath}</span></div>`);
         });
     } else {
-        // Hỗ trợ loang ghép vết 2 chặng liên hoàn cho điều kiện bắt buộc qua đỉnh K
         document.getElementById('start-node-info').innerHTML += ` <span class="text-green-700 font-bold">[Bắt buộc đi qua đỉnh ${formatNodeLabel(mustPass)}]</span>`;
         let res1 = solveCoreBF(startVertex);
         let res2 = solveCoreBF(mustPass);
@@ -440,19 +447,42 @@ function runBellmanFord() {
             let p1 = [];
             let curr = mustPass;
             let guard = 0;
-            while(curr !== startVertex && curr !== null && guard++ < n) { p1.push(formatNodeLabel(curr)); curr = res1.trace[curr]; }
-            p1.push(formatNodeLabel(startVertex)); p1.reverse();
+            while(curr !== startVertex && curr !== null && guard++ < n) { 
+                p1.push(curr); 
+                let prev = res1.trace[curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev; 
+            }
+            p1.push(startVertex); p1.reverse();
 
             let p2 = [];
             curr = target;
             guard = 0;
-            while(curr !== mustPass && curr !== null && guard++ < n) { p2.push(formatNodeLabel(curr)); curr = res2.trace[curr]; }
+            while(curr !== mustPass && curr !== null && guard++ < n) { 
+                p2.push(curr); 
+                let prev = res2.trace[curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev; 
+            }
             p2.reverse();
 
-            let fullPath = [...p1, ...p2];
+            let fullPath = [...p1, ...p2].map(formatNodeLabel);
             pathResults.push(`<div><span class="math font-bold">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)})</span> = <span class="font-bold text-primary">${d1 + d2}</span> &xrArr; Đường đi: <span class="font-bold text-green-700">${fullPath.join(' &rarr; ')}</span></div>`);
         });
     }
+
+    // Thực hiện tô màu xanh lá cây đậm cho các lộ trình tìm được
+    edgesToColor.forEach(edgeId => {
+        if (edgesDataSet.get(edgeId)) {
+            edgesDataSet.update({ id: edgeId, color: '#16a34a', width: 4 });
+        }
+    });
 
     document.getElementById('paths-output').innerHTML = pathResults.join('');
     document.getElementById('output-section').classList.remove('hidden');

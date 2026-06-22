@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Visual Toán Rời Rạc 2A - Thuật toán Floyd</title>
+    <title>Visual Toán Rời Rạc 2A - Thuật toán Floyd-Warshall</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet">
@@ -27,10 +27,10 @@
     <style>
         body { font-family: 'Be Vietnam Pro', sans-serif; }
         .math { font-family: "Cambria", "Times New Roman", serif; font-style: italic; }
-        .matrix-table { border-collapse: collapse; margin: 10px auto; font-size: 13px; }
-        .matrix-table th, .matrix-table td { border: 1px solid #c3c6d7; padding: 6px 10px; text-align: center; min-width: 40px; }
-        .matrix-table th { background-color: #f1f5f9; font-weight: bold; }
-        .matrix-highlight-rc { background-color: #fee2e2 !important; font-weight: bold; }
+        .matrix-table { border-collapse: collapse; margin: 4px 0; font-size: 13px; }
+        .matrix-table th, .matrix-table td { border: 1px solid #c3c6d7; width: 36px; height: 36px; text-align: center; vertical-align: middle; }
+        .matrix-table th { background-color: #004ac6; color: white; font-weight: bold; }
+        .matrix-highlight-rc { background-color: #fef08a !important; font-weight: bold; color: #1e3a8a; }
     </style>
 </head>
 <body class="bg-background text-on-background antialiased flex flex-col min-h-screen">
@@ -38,8 +38,8 @@
     <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
         <div class="flex justify-between items-center w-full px-6 max-w-[1200px] mx-auto py-4">
             <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-3xl">grid_view</span>
-                <span class="text-xl font-bold text-primary">Thuật toán Floyd - Đường đi ngắn nhất giữa tất cả các cặp đỉnh</span>
+                <span class="material-symbols-outlined text-primary text-3xl">grid_on</span>
+                <span class="text-xl font-bold text-primary">Thuật toán Floyd - Đường đi ngắn nhất mọi cặp đỉnh</span>
             </div>
             <a class="text-sm font-semibold text-primary hover:underline flex items-center gap-1" href="index.html">
                 <span class="material-symbols-outlined text-sm">arrow_back</span> Quay lại trang chủ
@@ -63,8 +63,8 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold mb-1 text-primary">Đỉnh xuất phát (Để truy vết xem kết luận):</label>
+                <div class="border-t pt-3">
+                    <label class="block text-sm font-semibold mb-1 text-primary">Đỉnh xuất phát để xem kết luận vết:</label>
                     <input id="start-vertex" type="text" value="A" class="w-full rounded border-outline-variant p-2 text-sm focus:ring-1 focus:ring-primary outline-none uppercase font-bold text-center">
                 </div>
 
@@ -80,12 +80,15 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Ma trận trọng số kề (Cho phép nhận số âm, 0 là không cạnh):</label>
-                    <textarea id="matrix-input" rows="5" class="w-full font-mono text-sm rounded border-outline-variant p-2 resize-y focus:ring-1 focus:ring-primary outline-none">0 6 9 0 0
-0 0 2 3 0
-0 0 0 0 1
-0 0 0 0 5
-0 0 0 0 0</textarea>
+                    <label class="block text-sm font-semibold mb-1 text-on-surface">Ma trận trọng số kề:</label>
+                    <div class="text-[11px] text-amber-700 font-semibold italic mb-1 bg-amber-50 p-1.5 rounded border border-amber-200">
+                        * Hướng dẫn: Nhập trọng số cụ thể (chấp nhận số âm). Gõ chữ <span class="font-mono font-bold bg-white px-1 border rounded">I</span> hoặc <span class="font-mono font-bold bg-white px-1 border rounded">inf</span> nếu không có cạnh nối (Vô cùng). Đường chéo chính tự nhận là 0.
+                    </div>
+                    <textarea id="matrix-input" rows="5" class="w-full font-mono text-sm rounded border-outline-variant p-2 resize-y focus:ring-1 focus:ring-primary outline-none">0 6 7 I I
+I 0 8 5 -4
+I I 0 -3 I
+I -2 I 0 9
+2 I I 7 0</textarea>
                 </div>
                 
                 <div class="flex gap-2">
@@ -102,16 +105,19 @@
                 <h3 class="text-base font-bold flex items-center gap-1 text-primary">
                     <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán Floyd (Python)
                 </h3>
-                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[185px]">
-<pre><code>def floyd_warshall(matrix):
-    n = len(matrix)
-    dist = [row[:] for row in matrix]
-    for k in range(n):
-        for i in range(n):
-            for j in range(n):
-                if dist[i][j] > dist[i][k] + dist[k][j]:
-                    dist[i][j] = dist[i][k] + dist[k][j]
-    return dist</code></pre>
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs leading-relaxed h-auto w-full overflow-x-auto">
+<pre class="min-w-max"><code>def floyd_warshall(matrix, V):
+    D = [[cell for cell in row] for row in matrix]
+    P = [[i for j in range(V)] for i in range(V)]
+    
+    for k in range(V):
+        for i in range(V):
+            for j in range(V):
+                if D[i][k] + D[k][j] < D[i][j]:
+                    D[i][j] = D[i][k] + D[k][j]
+                    P[i][j] = P[k][j]
+                    
+    return D, P</code></pre>
                 </div>
             </div>
         </div>
@@ -140,7 +146,7 @@
                     </button>
                 </div>
 
-                <div class="border border-outline-variant rounded-lg overflow-auto resize-y h-[340px] min-h-[220px] bg-[#fafafa]" id="resize-container">
+                <div class="border border-outline-variant rounded-lg overflow-auto resize-y h-[420px] min-h-[250px] bg-[#fafafa]" id="resize-container">
                     <div id="network-container" class="w-full h-full"></div>
                 </div>
             </div>
@@ -149,18 +155,18 @@
 
     <section id="output-section" class="w-full px-6 max-w-[1200px] mx-auto pb-12 hidden">
         <div class="bg-surface border border-outline-variant rounded-xl p-8 shadow-md">
-            <h2 class="text-xl font-bold text-primary mb-6 border-b-2 border-primary pb-3 uppercase text-center">
-                MÔ PHỎNG MA TRẬN QUY HOẠCH ĐỘNG FLOYD CHUẨN GIÁO TRÌNH
+            <h2 class="text-xl font-bold text-primary mb-2 border-b-2 border-primary pb-3 uppercase text-center">
+                MA TRẬN TIẾN TRÌNH QUY HOẠCH ĐỘNG FLOYD-WARSHALL
             </h2>
-            <div id="floyd-condition-info" class="text-sm font-semibold text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border border-blue-200"></div>
+            <div id="floyd-condition-info" class="text-base font-bold text-gray-700 mb-4"></div>
+            
+            <div id="matrices-steps-container" class="space-y-6 overflow-x-auto p-1"></div>
 
-            <div id="matrices-steps-container" class="space-y-12"></div>
-
-            <div class="mt-12 p-6 bg-green-50 border-l-4 border-green-600 rounded-r-lg">
-                <div class="font-bold text-lg mb-3 text-green-900 flex items-center gap-2">
-                    <span class="material-symbols-outlined">analytics</span> Kết quả đường đi ngắn nhất từ đỉnh xuất phát:
+            <div class="mt-8 p-5 bg-blue-50 border-l-4 border-primary rounded-r-lg">
+                <div class="font-bold text-lg mb-3 text-blue-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined">alt_route</span> Kết luận truy vết từ ma trận vết cuối cùng:
                 </div>
-                <div id="paths-summary-output" class="font-mono text-sm space-y-2 text-on-surface grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                <div id="paths-summary-output" class="font-mono text-base space-y-2 text-on-surface grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1"></div>
             </div>
         </div>
     </section>

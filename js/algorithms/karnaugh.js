@@ -184,6 +184,19 @@ document.getElementById('btn-clear-map').addEventListener('click', () => {
 });
 
 document.getElementById('btn-solve-karnaugh').addEventListener('click', () => {
+    let inputBoolean = document.getElementById('input-boolean').value.trim();
+    let inputF1 = document.getElementById('input-f1').value.trim();
+    let inputF0 = document.getElementById('input-f0').value.trim();
+
+    // TỰ ĐỘNG KHỚP NẠP DỮ LIỆU ĐẦU VÀO THEO THỨ TỰ ƯU TIÊN
+    if (inputBoolean) {
+        document.getElementById('btn-load-boolean').click();
+    } else if (inputF1) {
+        document.getElementById('btn-load-f1').click();
+    } else if (inputF0) {
+        document.getElementById('btn-load-f0').click();
+    }
+
     let minterms = [];
     document.querySelectorAll('.cell-kmap').forEach(c => {
         if (c.textContent === '1') {
@@ -191,7 +204,10 @@ document.getElementById('btn-solve-karnaugh').addEventListener('click', () => {
         }
     });
     
-    if (minterms.length === 0) return;
+    if (minterms.length === 0) {
+        alert("Vui lòng nhập biểu thức, tập số ô nhị phân hoặc click chọn trực tiếp các ô trên bìa Karnaugh trước khi giải!");
+        return;
+    }
 
     let primes = findPrimeImplicants(minterms, currentVars);
     let essentials = findEssentialPrimes(primes, minterms);

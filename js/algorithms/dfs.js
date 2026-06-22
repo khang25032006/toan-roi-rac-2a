@@ -156,7 +156,7 @@ function drawGraph() {
                         }
                     }
                 } else { 
-                    edgesDataSet.add({ from: fromNode, to: toNode, arrows: 'to', color: '#737686', width: 2 });
+                    edgesDataSet.add({ id: `${fromNode}->${toNode}`, from: fromNode, to: toNode, arrows: 'to', color: '#737686', width: 2 });
                 }
             }
         }
@@ -203,14 +203,14 @@ function initNetwork() {
                         if (currentMode === 'edge') {
                             edgesDataSet.add({ id: `${Math.min(fromNode, toNode)}-${Math.max(fromNode, toNode)}`, from: fromNode, to: toNode, color: '#737686', width: 2 });
                         } else {
-                            edgesDataSet.add({ from: fromNode, to: toNode, arrows: 'to', color: '#737686', width: 2 });
+                            edgesDataSet.add({ id: `${fromNode}->${toNode}`, from: fromNode, to: toNode, arrows: 'to', color: '#737686', width: 2 });
                         }
                         updateMatrixFromUI();
                     }
                     edgeStartNodeId = null;
                 }
             } else {
-                if(edgeStartNodeId !== null) {
+                if (edgeStartNodeId !== null) {
                     nodesDataSet.update({id: edgeStartNodeId, color: {background: '#ffffff', border: '#004ac6'}});
                     edgeStartNodeId = null;
                 }
@@ -244,6 +244,11 @@ function runDFS() {
         return;
     }
 
+    // Khôi phục trạng thái màu sắc và độ dày ban đầu của toàn bộ các cạnh
+    edgesDataSet.get().forEach(e => {
+        edgesDataSet.update({ id: e.id, color: '#737686', width: 2 });
+    });
+
     let adj = {};
     activeIds.forEach(id => adj[id] = []);
 
@@ -257,13 +262,13 @@ function runDFS() {
         }
     });
 
-    // Ép buộc sắp xếp tăng dần từ bé đến lớn cho tất cả danh sách kề
     activeIds.forEach(id => {
         adj[id].sort((a, b) => a - b);
     });
 
     let spanningTree = [];
     let visitedTree = {};
+    let edgesToColor = [];
     activeIds.forEach(id => visitedTree[id] = false);
     
     function dfsTree(u) {
@@ -272,11 +277,23 @@ function runDFS() {
         neighbors.forEach(v => {
             if (!visitedTree[v]) {
                 spanningTree.push(`(${u}, ${v})`);
+                
+                // Định danh ID cạnh kết quả để tô màu trực quan
+                edgesToColor.push(`${u}->${v}`);
+                edgesToColor.push(`${Math.min(u, v)}-${Math.max(u, v)}`);
+                
                 dfsTree(v);
             }
         });
     }
     dfsTree(start);
+
+    // Tiến hành cập nhật màu xanh lá cây đậm cho các cạnh thuộc cây khung DFS
+    edgesToColor.forEach(edgeId => {
+        if (edgesDataSet.get(edgeId)) {
+            edgesDataSet.update({ id: edgeId, color: '#16a34a', width: 4 });
+        }
+    });
 
     if (currentExecutionMode === 'dequy') {
         runDFSDeQuyLogic(adj, activeIds, start, spanningTree);
@@ -340,7 +357,6 @@ function runDFSNganXepLogic(adj, activeIds, start, spanningTree) {
         let unvisitedNeighbors = neighbors.filter(v => !visited[v]);
 
         if (unvisitedNeighbors.length > 0) {
-            // Lấy duy nhất 1 phần tử nhỏ nhất (đầu mảng đã sắp xếp)
             let nextNode = unvisitedNeighbors[0];
 
             stack.push(nextNode);

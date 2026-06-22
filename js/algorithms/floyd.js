@@ -70,10 +70,18 @@ document.getElementById('btn-reset-graph').addEventListener('click', () => {
 function parseMatrix() {
     const text = document.getElementById("matrix-input").value.trim();
     if (!text) return [];
-    return text.split("\n").map(row => 
-        row.trim().split(/\s+/).map(num => {
+    return text.split("\n").map((row, rIdx) => 
+        row.trim().split(/\s+/).map((num, cIdx) => {
+            let clean = num.toLowerCase().trim();
+            if (clean === 'i' || clean === 'inf' || clean === '∞') {
+                return Infinity;
+            }
             const val = parseFloat(num);
-            return isNaN(val) ? 0 : val;
+            if (isNaN(val)) return Infinity;
+            if (val === 0 && rIdx !== cIdx) {
+                return 0;
+            }
+            return val;
         })
     );
 }
@@ -83,7 +91,9 @@ function updateMatrixFromUI() {
     const n = ids.length;
     if (n === 0) { document.getElementById("matrix-input").value = ""; return; }
     
-    let matrix = Array.from({ length: n }, () => Array(n).fill(0));
+    let matrix = Array.from({ length: n }, () => Array(n).fill('I'));
+    for (let i = 0; i < n; i++) matrix[i][i] = 0;
+
     const idToIndex = {};
     ids.forEach((id, index) => { idToIndex[id] = index; });
     
@@ -115,7 +125,8 @@ function drawGraph() {
     }
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
-            if (matrix[i][j] !== 0) {
+            if (matrix[i][j] !== Infinity) {
+                if (i === j) continue;
                 if (matrix[j][i] === matrix[i][j] && i < j) {
                     edgesDataSet.add({
                         id: `${i+1}-${j+1}`,
@@ -314,6 +325,11 @@ function runFloydAlgorithm() {
 
     let displayNodes = activeIds.filter(id => !skipNodes.includes(id));
 
+    // Reset màu sắc cung/cạnh về trạng thái mặc định ban đầu
+    edgesDataSet.get().forEach(e => {
+        edgesDataSet.update({ id: e.id, color: '#737686', width: 2 });
+    });
+
     let D = {}, P = {};
     activeIds.forEach(i => {
         D[i] = {}; P[i] = {};
@@ -326,7 +342,8 @@ function runFloydAlgorithm() {
     let rawMatrix = parseMatrix();
     activeIds.forEach((i, rIdx) => {
         activeIds.forEach((j, cIdx) => {
-            if (rawMatrix[rIdx] && rawMatrix[rIdx][cIdx] !== 0) {
+            if (rawMatrix[rIdx] && rawMatrix[rIdx][cIdx] !== Infinity) {
+                if (i === j) return;
                 D[i][j] = rawMatrix[rIdx][cIdx];
             }
         });
@@ -385,6 +402,8 @@ function runFloydAlgorithm() {
     }
 
     let summaryHtml = "";
+    let edgesToColor = new Set();
+
     displayNodes.forEach(target => {
         if (target === startVertex) {
             summaryHtml += `<div class="border-b pb-1">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)}) = 0 &xrArr; Đường đi: <span class="font-bold text-green-700">${formatNodeLabel(startVertex)}</span></div>`;
@@ -404,27 +423,52 @@ function runFloydAlgorithm() {
         let loopGuard = 0;
         if (mustPass && displayNodes.includes(mustPass) && startVertex !== mustPass && target !== mustPass) {
             let p1 = [mustPass], p2 = [target];
+            
             let curr = mustPass;
             while (curr !== startVertex && P[startVertex][curr] !== curr && P[startVertex][curr] !== null && loopGuard++ < n) {
-                curr = P[startVertex][curr]; p1.push(curr);
+                let prev = P[startVertex][curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev; p1.push(curr);
             }
             p1.reverse();
+            
             curr = target;
             while (curr !== mustPass && P[mustPass][curr] !== curr && P[mustPass][curr] !== null && loopGuard++ < n) {
-                curr = P[mustPass][curr]; p2.push(curr);
+                let prev = P[mustPass][curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev; p2.push(curr);
             }
             p2.reverse();
+            
             let fullPath = [...p1, ...p2.slice(1)].map(formatNodeLabel).join('&rarr;');
             summaryHtml += `<div class="border-b pb-1">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)}) [qua ${formatNodeLabel(mustPass)}] = <span class="font-bold text-primary">${finalCost}</span> &xrArr; Đường đi: <span class="font-bold text-green-700">${fullPath}</span></div>`;
         } else {
             let path = [target];
             let curr = target;
             while (curr !== startVertex && P[startVertex][curr] !== curr && P[startVertex][curr] !== null && loopGuard++ < n) {
-                curr = P[startVertex][curr];
+                let prev = P[startVertex][curr];
+                if (prev !== null) {
+                    edgesToColor.add(`${prev}->${curr}`);
+                    edgesToColor.add(`${Math.min(prev, curr)}-${Math.max(prev, curr)}`);
+                }
+                curr = prev;
                 path.push(curr);
             }
             path.reverse();
             summaryHtml += `<div class="border-b pb-1">d(${formatNodeLabel(startVertex)}, ${formatNodeLabel(target)}) = <span class="font-bold text-primary">${finalCost}</span> &xrArr; Đường đi: <span class="font-bold text-green-700">${path.map(formatNodeLabel).join('&rarr;')}</span></div>`;
+        }
+    });
+
+    // Thực hiện tô màu xanh lá cây đậm cho các cung thuộc lộ trình tìm được
+    edgesToColor.forEach(edgeId => {
+        if (edgesDataSet.get(edgeId)) {
+            edgesDataSet.update({ id: edgeId, color: '#16a34a', width: 4 });
         }
     });
 

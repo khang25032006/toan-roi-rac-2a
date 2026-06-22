@@ -1,12 +1,13 @@
-<!DOCTYPE html><html lang="vi"><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Visual Toán Rời Rạc 2A - Trang Chủ</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Visual Toán Rời Rạc 2A - Trang Chủ</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <script id="tailwind-config">
         tailwind.config = {
           darkMode: "class",
           theme: {
@@ -97,143 +98,203 @@
                       "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
                       "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
               }
-      },
+            },
           },
         }
     </script>
 </head>
 <body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container antialiased flex flex-col min-h-screen">
-<!-- TopNavBar -->
-<header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
-<div class="flex justify-between items-center w-full px-lg md:px-xl max-w-container-max mx-auto py-md">
-<div class="flex items-center gap-sm">
-<span class="material-symbols-outlined text-primary text-3xl">school</span>
-<span class="text-headline-md font-headline-md font-bold text-primary">Visual Toán Rời Rạc 2A</span>
-</div>
-<nav class="hidden md:flex gap-lg">
-<a class="text-label-md font-label-md text-primary border-b-2 border-primary font-bold pb-1" href="#">Trang chủ</a>
-<a class="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors pb-1" href="#">Thuật toán</a>
-<a class="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors pb-1" href="#">Tài liệu</a>
-<a class="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors pb-1" href="#">Hướng dẫn</a>
-</nav>
-<div class="flex items-center gap-md">
-<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-all duration-200 p-sm rounded-full active:opacity-80 active:scale-95">
-<span class="material-symbols-outlined">settings</span>
-</button>
-</div>
-</div>
-</header>
-<!-- Main Content -->
-<main class="flex-grow w-full px-lg md:px-xl max-w-container-max mx-auto py-2xl flex flex-col gap-2xl">
-<!-- Hero Section -->
-<section class="flex flex-col items-center text-center max-w-3xl mx-auto gap-md">
-<h1 class="text-display-lg font-display-lg text-on-surface">Thư viện Thuật toán Toán Rời Rạc</h1>
-<p class="text-body-lg font-body-lg text-on-surface-variant">Môi trường học tập trực quan dành cho Giảng viên và Sinh viên.</p>
-</section>
-<!-- Algorithm Grid -->
-<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-<!-- Nhóm 1: Duyệt Đồ Thị -->
-<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-lg hover:shadow-sm transition-shadow duration-300 relative group overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
-<div class="flex items-center gap-sm mb-md">
-<span class="material-symbols-outlined text-primary-container">account_tree</span>
-<h2 class="text-headline-md font-headline-md text-on-surface">Duyệt Đồ Thị</h2>
-</div>
-<ul class="flex flex-col gap-sm">
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="bfs.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            BFS (Breadth-First Search)
-                        </a>
-</li>
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="dfs.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            DFS (Depth-First Search)
-                        </a>
-</li>
-</ul>
-</div>
-<!-- Nhóm 2: Cây Khung & Đường Đi Ngắn Nhất -->
-<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-lg hover:shadow-sm transition-shadow duration-300 relative group overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
-<div class="flex items-center gap-sm mb-md">
-<span class="material-symbols-outlined text-primary-container">route</span>
-<h2 class="text-headline-md font-headline-md text-on-surface">Cây Khung &amp; Đường Đi</h2>
-</div>
-<ul class="flex flex-col gap-sm">
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="prim.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Thuật toán Prim
-                        </a>
-</li>
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="kruskal.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Thuật toán Kruskal
-                        </a>
-</li>
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="dijkstra.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Thuật toán Dijkstra
-                        </a>
-</li>
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="bellmanford.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Thuật toán Bellman-Ford
-                        </a>
-</li>
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="floyd.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Thuật toán Floyd
-                        </a>
-</li>
-</ul>
-</div>
-<!-- Nhóm 3: Chu trình & Cấu Trúc Khác -->
-<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-lg hover:shadow-sm transition-shadow duration-300 relative group overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
-<div class="flex items-center gap-sm mb-md">
-<span class="material-symbols-outlined text-primary-container">data_object</span>
-<h2 class="text-headline-md font-headline-md text-on-surface">Cấu Trúc Khác</h2>
-</div>
-<ul class="flex flex-col gap-sm">
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="euler.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Chu trình Euler
-                        </a>
-</li>
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="hamilton.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Chu trình Hamilton
-                        </a>
-</li>
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="binary-tree.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Duyệt cây nhị phân
-                        </a>
-</li>
-<li class="">
-<a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="karnaugh.html">
-<span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
-                            Tối tiểu hóa hàm Boole
-                        </a>
-</li>
-</ul>
-</div>
-</section>
-</main>
-<!-- Footer -->
-<footer class="bg-surface-container-lowest border-t border-outline-variant mt-auto">
 
+<header class="bg-surface border-b border-outline-variant sticky top-0 z-50 shadow-sm">
+    <div class="flex justify-between items-center w-full px-lg md:px-xl max-w-[1200px] mx-auto py-md">
+        <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary text-3xl">school</span>
+            <span class="text-headline-md font-headline-md font-bold text-primary">Visual Toán Rời Rạc 2A</span>
+        </div>
+        <nav class="hidden md:flex gap-lg">
+            <a class="text-label-md font-label-md text-primary border-b-2 border-primary font-bold pb-1" href="#">Trang chủ</a>
+            <button id="nav-algorithms" class="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors pb-1 outline-none">Thuật toán</button>
+            <button id="nav-docs" class="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors pb-1 outline-none">Tài liệu</button>
+            <button id="nav-author" class="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors pb-1 outline-none">Tác giả & Phiên bản</button>
+        </nav>
+        <div class="w-8 h-8"></div>
+    </div>
+</header>
+
+<main class="flex-grow w-full px-lg md:px-xl max-w-[1200px] mx-auto py-2xl flex flex-col gap-2xl">
+    <section class="flex flex-col items-center text-center max-w-3xl mx-auto gap-md">
+        <h1 class="text-display-lg font-display-lg text-on-surface">Thư viện Thuật toán Toán Rời Rạc</h1>
+        <p class="text-body-lg font-body-lg text-on-surface-variant">Môi trường học tập trực quan dành cho Giảng viên và Sinh viên.</p>
+    </section>
+
+    <section id="algorithm-section" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg scroll-mt-24">
+        <div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-lg hover:shadow-sm transition-shadow duration-300 relative group overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+            <div class="flex items-center gap-sm mb-md">
+                <span class="material-symbols-outlined text-primary-container">account_tree</span>
+                <h2 class="text-headline-md font-headline-md text-on-surface">Duyệt Đồ Thị & Cây khung</h2>
+            </div>
+            <ul class="flex flex-col gap-sm">
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="bfs.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        BFS (Breadth-First Search)
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="dfs.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        DFS (Depth-First Search)
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-lg hover:shadow-sm transition-shadow duration-300 relative group overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+            <div class="flex items-center gap-sm mb-md">
+                <span class="material-symbols-outlined text-primary-container">route</span>
+                <h2 class="text-headline-md font-headline-md text-on-surface">Cây Khung &amp; Đường Đi</h2>
+            </div>
+            <ul class="flex flex-col gap-sm">
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="prim.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Thuật toán Prim
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="kruskal.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Thuật toán Kruskal
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="dijkstra.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Thuật toán Dijkstra
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="bellmanford.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Thuật toán Bellman-Ford
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="floyd.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Thuật toán Floyd
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-lg hover:shadow-sm transition-shadow duration-300 relative group overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+            <div class="flex items-center gap-sm mb-md">
+                <span class="material-symbols-outlined text-primary-container">data_object</span>
+                <h2 class="text-headline-md font-headline-md text-on-surface">Cấu Trúc Khác</h2>
+            </div>
+            <ul class="flex flex-col gap-sm">
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="euler.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Chu trình Euler
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="hamilton.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Chu trình Hamilton
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="binary-tree.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Duyệt cây nhị phân (Trước/Trong/Sau)
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors group/link" href="karnaugh.html">
+                        <span class="material-symbols-outlined text-[20px] text-outline group-hover/link:text-primary transition-colors">arrow_right_alt</span>
+                        Tối tiểu hóa hàm Boole
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-surface-container-lowest border-t border-outline-variant py-md px-lg mt-auto text-center">
+    <div class="max-w-container-max mx-auto flex flex-col gap-xs">
+        <p class="text-caption text-on-surface-variant font-semibold">
+            &copy; 2026 — Sinh viên Khoa Toán - Tin học — Đại học Khoa học Tự nhiên VNU-HCMUS
+        </p>
+        <p class="text-caption text-amber-700 font-medium italic max-w-2xl mx-auto">
+            * Cảnh báo học thuật: Mọi bài toán và chuỗi lời giải chi tiết được tạo ra trên hệ thống này chỉ nên dùng cho mục đích tham khảo dành cho môn học Toán Rời Rạc 2A. Mọi thuật toán đều có khả năng sai sót, nếu phát hiện sai sót, vui lòng liên hệ với tác giả để được chỉnh sửa và cải thiện. Hệ thống không đảm bảo độ chính xác tuyệt đối của mọi lời giải, đặc biệt đối với các bài toán phức tạp hoặc có nhiều trường hợp đặc biệt. Sử dụng thông tin trên hệ thống một cách thận trọng và luôn kiểm tra lại kết quả khi áp dụng vào bài tập hoặc kỳ thi thực tế.
+        </p>
+    </div>
 </footer>
+
+<div id="author-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-surface-container-lowest border border-outline-variant w-[90%] max-w-md rounded-xl p-lg shadow-2xl scale-95 transition-transform duration-300 relative">
+        <button id="close-modal" class="absolute top-md right-md text-on-surface-variant hover:text-red-600 transition-colors">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <h3 id="modal-title" class="text-headline-md font-bold text-primary mb-md border-b pb-sm flex items-center gap-xs">
+            <span class="material-symbols-outlined">info</span> Thông tin Hệ thống
+        </h3>
+        <div id="modal-content"></div>
+    </div>
+</div>
+
+<div id="author-data-template" class="hidden">
+    <div class="space-y-4 text-body-md text-on-surface-variant">
+        <div class="border-b pb-2">
+            <p><strong>Tác giả:</strong> Sinh viên Lý Gia Khang (MSSV: 24110116)</p>
+            <p><strong>Khoa:</strong> Toán - Tin học (VNU-HCMUS)</p>
+            <p><strong>Liên hệ:</strong> <a href="https://www.facebook.com/gia.khang.848285" target="_blank" class="text-primary hover:underline">fb.com/gia.khang.848285</a></p>
+            <p><strong>Phiên bản hiện tại:</strong> <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full">v1.2.5-Stable</span></p>
+        </div>
+        
+        <div class="space-y-2">
+            <p class="font-bold text-primary flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">history</span> Nhật ký phát triển (Changelog):
+            </p>
+            <div class="text-xs space-y-2 max-h-[200px] overflow-y-auto pr-1">
+                <p class="font-semibold text-gray-700 border-l-2 border-primary pl-2">Bản cập nhật v1.2.5 (Hiện tại):</p>
+                <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                    <li><b>Trực quan hóa kết quả:</b> Triển khai engine tô màu tự động lộ trình tối ưu (Xanh lục đậm, 4px) chạy dọc hệ thống Vis-Network cho toàn bộ các mô-đun đồ thị: BFS, DFS, Dijkstra, Bellman-Ford, Floyd-Warshall và Euler.</li>
+                    <li><b>Cấu trúc dữ liệu:</b> Chuẩn hóa dữ liệu đầu vào cho ma trận trọng số. Cho phép nhập ký tự lý thuyết <code class="bg-gray-100 px-1 border rounded">I</code> / <code class="bg-gray-100 px-1 border rounded">inf</code> biểu diễn vô cùng ($\infty$), tách biệt hoàn toàn với trọng số bằng 0 thực tế.</li>
+                    <li><b>Mở rộng giải thuật:</b> Tích hợp engine loang BFS kiểm tra tính liên thông yếu trước khi chạy giải thuật tìm chu trình Euler, tự động phát hiện và chặn lỗi logic khi đồ thị chứa thành phần cô lập.</li>
+                    <li><b>Xử lý đa hình:</b> Nâng cấp giải thuật biện luận logic tuần tiến chu trình Hamilton cho cả 2 cấu hình đồ thị có hướng (kiểm tra liên thông mạnh) và đồ thị vô hướng.</li>
+                    <li><b>UI/UX:</b> Tối ưu hóa không gian hiển thị mã nguồn Python (h-auto), hỗ trợ tự động co giãn ôm khít 100% dòng lệnh giúp tăng tính scannability.</li>
+                </ul>
+
+                <p class="font-semibold text-gray-700 border-l-2 border-gray-400 pl-2 mt-3">Bản cập nhật v1.2.0 (Tiền nhiệm):</p>
+                <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                    <li>Tích hợp cơ chế gộp nạp-giải tự động (Trigger click) cho bìa Karnaugh theo thứ tự ưu tiên dữ liệu đầu vào.</li>
+                    <li>Tinh chỉnh thuật toán cấu trúc duyệt cây phân tầng tự luận cho SVG logic rẽ nhánh quyết định.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="docs-data-template" class="hidden">
+    <div class="space-y-4 text-body-md text-on-surface-variant">
+        <div class="bg-blue-50 border-l-4 border-primary p-4 rounded-r-xl">
+            <p class="font-medium leading-relaxed text-blue-900">
+                Hệ thống được xây dựng và dựa gần sát vào <b>Tài liệu Slide Giáo Trình Môn Học Toán Rời Rạc 2A</b> của cô <b>Lê Thị Tuyết Nhung</b> — Năm học 2025-2026.
+            </p>
+        </div>
+        <p class="text-xs text-gray-500 leading-relaxed">
+            Mọi cấu trúc bảng tự luận, thứ tự hạ nhãn tối ưu, và các quy tắc cắt tỉa nhánh biện luận logic trên hệ thống đều ĐÃ CỐ GẮNG ĐỂ tuân thủ chặt chẽ theo khung sườn truyền tải kiến thức chính thống từ bộ môn để đảm bảo tính đồng bộ học thuật tối đa.
+        </p>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const links = document.querySelectorAll("main a");
@@ -246,7 +307,48 @@
                 }
             });
         });
+
+        document.getElementById('nav-algorithms').addEventListener('click', () => {
+            document.getElementById('algorithm-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        const modal = document.getElementById('author-modal');
+        const modalContainer = modal.querySelector('div');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+
+        function openModal(type) {
+            if (type === 'author') {
+                modalTitle.innerHTML = '<span class="material-symbols-outlined">info</span> Thông tin Hệ thống';
+                modalContent.innerHTML = document.getElementById('author-data-template').innerHTML;
+            } else if (type === 'docs') {
+                modalTitle.innerHTML = '<span class="material-symbols-outlined">description</span> Tài liệu Tham chiếu';
+                modalContent.innerHTML = document.getElementById('docs-data-template').innerHTML;
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContainer.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modalContainer.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        document.getElementById('nav-author').addEventListener('click', () => openModal('author'));
+        document.getElementById('nav-docs').addEventListener('click', () => openModal('docs'));
+        document.getElementById('close-modal').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
     });
 </script>
 
-</body></html>
+</body>
+</html>

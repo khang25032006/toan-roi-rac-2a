@@ -141,8 +141,8 @@
                 <h3 class="text-base font-bold flex items-center gap-1 text-primary">
                     <span class="material-symbols-outlined text-sm">code</span> Mã nguồn thuật toán Hierholzer (Python)
                 </h3>
-                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[180px] resize-y">
-<pre><code>def find_eulerian_path(adj_matrix, is_directed=False, start=0):
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs leading-relaxed h-auto w-full overflow-x-auto">
+<pre class="min-w-max"><code>def find_eulerian_path(adj_matrix, is_directed=False, start=0):
     curr_graph = [row[:] for row in adj_matrix]
     stack = [start]
     route = []
