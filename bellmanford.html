@@ -106,20 +106,24 @@ I -2 I 0 9
                     <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán Bellman-Ford (Python)
                 </h3>
                 <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs leading-relaxed h-auto w-full overflow-x-auto">
-<pre class="min-w-max"><code>def bellman_ford(graph, V, start):
-    dist = {i: float('inf') for i in range(1, V + 1)}
-    dist[start] = 0
+<pre class="min-w-max"><code>def thuat_toan_bellman_ford(danh_sach_canh, so_dinh, dinh_bat_dau):
+    khoang_cach = {i: float('inf') for i in range(1, so_dinh + 1)}
+    khoang_cach[dinh_bat_dau] = 0
+    truoc = {i: None for i in range(1, so_dinh + 1)}
     
-    for _ in range(V - 1):
-        for u, v, w in graph:
-            if dist[u] != float('inf') and dist[u] + w < dist[v]:
-                dist[v] = dist[u] + w
+    for _ in range(so_dinh - 1):
+        for u, v, trong_so in danh_sach_canh:
+            if khoang_cach[u] != float('inf') and khoang_cach[u] + trong_so < khoang_cach[v]:
+                khoang_cach[v] = khoang_cach[u] + trong_so
+                truoc[v] = u
                 
-    for u, v, w in graph:
-        if dist[u] != float('inf') and dist[u] + w < dist[v]:
+    for u, v, trong_so in danh_sach_canh:
+        if khoang_cach[u] != float('inf') and khoang_cach[u] + trong_so < khoang_cach[v]:
             print("Đồ thị chứa chu trình âm!")
-            return None
-    return dist</code></pre>
+            return None, None
+            
+    return khoang_cach, truoc
+</code></pre>
                 </div>
             </div>
         </div>

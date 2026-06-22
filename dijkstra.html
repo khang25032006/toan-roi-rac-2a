@@ -150,22 +150,28 @@ I I I I 0</textarea>
                 <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[210px] resize-y">
 <pre><code>import heapq
 
-def dijkstra(graph, start):
-    dist = {v: float('inf') for v in graph}
-    dist[start] = 0
-    queue = [(0, start)]
+def thuat_toan_dijkstra(do_thi, dinh_bat_dau):
+    khoang_cach = {v: float('inf') for v in do_thi}
+    khoang_cach[dinh_bat_dau] = 0
+    truoc = {v: None for v in do_thi} 
     
-    while queue:
-        d, u = heapq.heappop(queue)
-        if d > dist[u]: 
+    hang_doi = [(0, dinh_bat_dau)]
+    
+    while hang_doi:
+        kc_hien_tai, u = heapq.heappop(hang_doi)
+        
+        if kc_hien_tai > khoang_cach[u]: 
             continue
             
-        for v, weight in graph[u].items():
-            if dist[u] + weight < dist[v]:
-                dist[v] = dist[u] + weight
-                heapq.heappush(queue, (dist[v], v))
+        for v, trong_so in do_thi[u].items():
+            kc_moi = khoang_cach[u] + trong_so
+            
+            if kc_moi < khoang_cach[v]:
+                khoang_cach[v] = kc_moi
+                truoc[v] = u 
+                heapq.heappush(hang_doi, (kc_moi, v))
                 
-    return dist</code></pre>
+    return khoang_cach, truoc</code></pre>
                 </div>
             </div>
         </div>

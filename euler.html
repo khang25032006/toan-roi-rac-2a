@@ -39,7 +39,7 @@
         <div class="flex justify-between items-center w-full px-6 max-w-[1200px] mx-auto py-4">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary text-3xl">all_inclusive</span>
-                <span class="text-xl font-bold text-primary">Đường đi & Chu trình Euler (Thuật toán Hierholzer)</span>
+                <span class="text-xl font-bold text-primary">Đường đi & Chu trình Euler </span>
             </div>
             <a class="text-sm font-semibold text-primary hover:underline flex items-center gap-1" href="index.html">
                 <span class="material-symbols-outlined text-sm">arrow_back</span> Quay lại trang chủ
@@ -139,28 +139,32 @@
 
             <div class="bg-surface border border-outline-variant rounded-xl p-5 flex flex-col gap-2 shadow-sm">
                 <h3 class="text-base font-bold flex items-center gap-1 text-primary">
-                    <span class="material-symbols-outlined text-sm">code</span> Mã nguồn thuật toán Hierholzer (Python)
+                    <span class="material-symbols-outlined text-sm">code</span> Mã nguồn thuật toán (Python)
                 </h3>
                 <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs leading-relaxed h-auto w-full overflow-x-auto">
-<pre class="min-w-max"><code>def find_eulerian_path(adj_matrix, is_directed=False, start=0):
-    curr_graph = [row[:] for row in adj_matrix]
-    stack = [start]
-    route = []
+<pre class="min-w-max"><code>def thuat_toan_euler(ma_tran_ke, dinh_bat_dau, co_huong=False):
+    do_thi_tam = [[cot for cot in hang] for hang in ma_tran_ke]
+    ngan_xep = [dinh_bat_dau]
+    duong_di_euler = []
     
-    while stack:
-        u = stack[-1]
-        has_edge = False
-        for v in range(len(curr_graph)):
-            if curr_graph[u][v] > 0:
-                curr_graph[u][v] -= 1
-                if not is_directed:
-                    curr_graph[v][u] -= 1
-                stack.append(v)
-                has_edge = True
+    while ngan_xep:
+        dinh_hien_tai = ngan_xep[-1]
+        co_canh_noi = False
+        
+        for dinh_ke in range(1, len(ma_tran_ke) + 1):
+            if do_thi_tam[dinh_hien_tai - 1][dinh_ke - 1] > 0:
+                do_thi_tam[dinh_hien_tai - 1][dinh_ke - 1] -= 1
+                if not co_huong:
+                    do_thi_tam[dinh_ke - 1][dinh_hien_tai - 1] -= 1
+                    
+                ngan_xep.append(dinh_ke)
+                co_canh_noi = True
                 break
-        if not has_edge:
-            route.append(stack.pop())
-    return route[::-1]</code></pre>
+                
+        if not co_canh_noi:
+            duong_di_euler.append(ngan_xep.pop())
+            
+    return duong_di_euler[::-1]</code></pre>
                 </div>
             </div>
         </div>

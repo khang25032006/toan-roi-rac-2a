@@ -89,20 +89,23 @@
                     <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán (Python)
                 </h2>
                 <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[220px] min-h-[150px] max-h-[500px] resize-y">
-<pre><code>def bfs(graph, start):
-    visited = [False] * (len(graph) + 1)
-    queue = [start]
-    visited[start] = True
-    bfs_order = []
+<pre><code>def bfs(do_thi, dinh_bat_dau):
+    da_duyet = [False] * (len(do_thi) + 1)
+    hang_doi = [dinh_bat_dau]
+    da_duyet[dinh_bat_dau] = True
+    thu_tu_duyet = []
     
-    while queue:
-        u = queue.pop(0)
-        bfs_order.append(u)
-        for v in range(1, len(graph) + 1):
-            if graph[u-1][v-1] == 1 and not visited[v]:
-                queue.append(v)
-                visited[v] = True
-    return bfs_order</code></pre>
+    while hang_doi:
+        dinh_hien_tai = hang_doi.pop(0)
+        thu_tu_duyet.append(dinh_hien_tai)
+        
+        for dinh_ke in range(1, len(do_thi) + 1):
+            # Kiểm tra xem có cạnh nối và đỉnh kề đó chưa được duyệt
+            if do_thi[dinh_hien_tai - 1][dinh_ke - 1] == 1 and not da_duyet[dinh_ke]:
+                hang_doi.append(dinh_ke)
+                da_duyet[dinh_ke] = True
+                
+    return thu_tu_duyet</code></pre>
                 </div>
             </div>
         </div>

@@ -84,32 +84,39 @@
 
             <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-primary">
-                    <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán (C++ Backend)
+                    <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán (Python)
                 </h2>
                 <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[200px] min-h-[150px] resize-y">
-<pre><code>void prim(int start, int V, vector&lt;vector&lt;int&gt;&gt;& matrix) {
-    vector&lt;bool&gt; visited(V + 1, false);
-    vector&lt;int&gt; X = {start};
-    visited[start] = true;
-    int total_weight = 0;
-
-    while (X.size() &lt; V) {
-        int min_w = INT_MAX;
-        int u_chosen = -1, v_chosen = -1;
-        for (int u : X) {
-            for (int v = 1; v &lt;= V; v++) {
-                if (!visited[v] && matrix[u-1][v-1] &gt; 0 && matrix[u-1][v-1] &lt; min_w) {
-                    min_w = matrix[u-1][v-1];
-                    u_chosen = u; v_chosen = v;
-                }
-            }
-        }
-        if (u_chosen == -1) break; // Đồ thị không liên thông
-        X.push_back(v_chosen);
-        visited[v_chosen] = true;
-        total_weight += min_w;
-    }
-}</code></pre>
+<pre><code>def thuat_toan_prim(dinh_bat_dau, so_dinh, ma_tran_trong_so):
+    da_duyet = [False] * (so_dinh + 1)
+    tap_dinh_X = [dinh_bat_dau]  
+    da_duyet[dinh_bat_dau] = True
+    tong_trong_so = 0
+    
+    danh_sach_canh_cay_khung = [] 
+    
+    while len(tap_dinh_X) < so_dinh:
+        trong_so_nho_nhat = float('inf') 
+        u_duoc_chon = -1
+        v_duoc_chon = -1
+        
+        for u in tap_dinh_X:
+            for v in range(1, so_dinh + 1):
+                trong_so = ma_tran_trong_so[u-1][v-1]
+                if not da_duyet[v] and trong_so > 0 and trong_so < trong_so_nho_nhat:
+                    trong_so_nho_nhat = trong_so
+                    u_duoc_chon = u
+                    v_duoc_chon = v
+                    
+        if u_duoc_chon == -1:
+            break 
+            
+        tap_dinh_X.append(v_duoc_chon)
+        da_duyet[v_duoc_chon] = True
+        tong_trong_so += trong_so_nho_nhat
+        danh_sach_canh_cay_khung.append((u_duoc_chon, v_duoc_chon, trong_so_nho_nhat))
+        
+    return tong_trong_so, danh_sach_canh_cay_khung, tap_dinh_X</code></pre>
                 </div>
             </div>
         </div>

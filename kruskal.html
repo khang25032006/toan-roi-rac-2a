@@ -82,21 +82,47 @@
 
             <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-primary">
-                    <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán (C++)
+                    <span class="material-symbols-outlined">code</span> Mã nguồn thuật toán (Python)
                 </h2>
                 <div class="bg-slate-900 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-auto leading-relaxed h-[220px] min-h-[150px] max-h-[500px] resize-y">
-<pre><code>void kruskal(int V, vector&lt;Edge&gt;& edges) {
-    sort(edges.begin(), edges.end());
-    DisjointSet dsu(V);
-    vector&lt;Edge&gt; mst;
+<pre><code>class TapHopRoiRac:
+    def __init__(self, so_dinh):
+        self.cha = list(range(so_dinh + 1))
+        
+    def tim_goc(self, u):
+        if self.cha[u] == u:
+            return u
+        self.cha[u] = self.tim_goc(self.cha[u])
+        return self.cha[u]
+        
+    def hop_nhat(self, u, v):
+        goc_u = self.tim_goc(u)
+        goc_v = self.tim_goc(v)
+        
+        if goc_u != goc_v:
+            self.cha[goc_u] = goc_v
+            return True
+        return False
 
-    for (auto& edge : edges) {
-        if (dsu.unite(edge.u, edge.v)) {
-            mst.push_back(edge);
-            if (mst.size() == V - 1) break;
-        }
-    }
-}</code></pre>
+def thuat_toan_kruskal(so_dinh, danh_sach_canh):
+  
+    danh_sach_canh.sort(key=lambda canh: canh[1])
+    
+    dsu = TapHopRoiRac(so_dinh)
+    cay_khung = []
+    tong_trong_so = 0
+    
+    for canh in danh_sach_canh:
+        u, v, trong_so = canh
+        
+        if dsu.hop_nhat(u, v):
+            cay_khung.append(canh)
+            tong_trong_so += trong_so
+            
+            if len(cay_khung) == so_dinh - 1:
+                break
+                
+    return tong_trong_so, cay_khung</code></pre>
                 </div>
             </div>
         </div>
